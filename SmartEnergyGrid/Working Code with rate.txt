@@ -1,0 +1,102 @@
+ #include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(0x3F, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
+
+
+int LED = 3;
+int LED2 = 12;
+int BUTTON = 4;
+int BUTTON2 = 5;
+boolean relay1=false;
+boolean relay2=false;
+int thief_in=2;
+int thief_out=8;
+
+
+int sensorPin = A0;    // select the input pin for the potentiometer
+int sensorValue = 0;  // variable to store the value coming from the sensor
+int i=0;
+int ans;
+int j;
+void setup()
+{
+  
+  lcd.begin(16, 2); 
+  Serial.begin(9600);
+   pinMode(thief_in,INPUT);
+   pinMode(thief_out,OUTPUT);
+
+    pinMode(LED,OUTPUT);
+    pinMode(BUTTON,INPUT);
+ 
+    pinMode(LED2,OUTPUT);
+    pinMode(BUTTON2,INPUT);
+
+    Serial.setTimeout(10);
+    while(Serial.available()==0){}
+     j=Serial.parseInt();
+}
+
+void loop()
+{
+sensorValue = analogRead(sensorPin);
+   if (sensorValue>0)
+   {
+   ans= i++;
+    Serial.println(ans*j);
+    delay(250);
+}
+
+
+if(digitalRead(BUTTON) == HIGH)
+{
+  lcd.clear();
+  lcd.setCursor(0,0);
+lcd.print("GRID 1 ON");
+relay1=true;
+}
+else
+  {
+    relay1=false;
+    digitalWrite(LED,LOW);  
+  //   Serial.println("1OFF");
+  }
+
+  if(digitalRead(BUTTON2) == HIGH)
+{
+lcd.clear();
+  lcd.setCursor(0,0);
+lcd.print("GRID 2 ON");
+relay2=true;
+}
+else
+  {
+    relay2=false;
+    digitalWrite(LED2,LOW);  
+  //   Serial.println("2OFF");
+  }
+ 
+ if(relay1==true && relay2==false)
+  {
+    digitalWrite(LED,HIGH);
+  }
+  if(relay1==false && relay2==true)
+  {
+    digitalWrite(LED2,HIGH);
+  }
+  
+if(digitalRead(thief_in) == HIGH)
+{
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Theft Detected");
+  digitalWrite(thief_out,HIGH);
+}
+  else if(digitalRead(thief_in) == LOW)
+  {
+     digitalWrite(thief_out,LOW);
+     lcd.clear();
+    }
+
+}
+  
